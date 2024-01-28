@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "../../components/login/login";
 import App from "../../App";
 import NotFound from "../../components/notFound/notFound";
-import Countries from "../../components/admin/countries/countries";
+import Countries from "../../components/admin/countries/countries/countries";
 import Dashboard from "../../components/admin/dashboard/dashboard";
 
 const AllRoutes = () => {

@@ -1,17 +1,18 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import "../../../../common/show modal/showModal.css";
+import "../../../../../common/show modal/showModal.css";
 import { useTranslation } from "react-i18next";
 import { TextField } from "@mui/material";
 
-function ModalEdit(props) {
+function ModalAdd(props) {
   const { t } = useTranslation();
 
+ 
   return (
     <Modal show={props.show} onHide={props.closeModal} className="Modal">
       <Modal.Header closeButton>
-        <Modal.Title>{t("EditCountry")} </Modal.Title>
+        <Modal.Title>{t("AddNewCountry")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form action="post">
@@ -23,7 +24,7 @@ function ModalEdit(props) {
             type="text"
             label={t("Name")}
             name="name"
-            value={props.editItem?.name}
+            value={props.newCountry?.name}
             onChange={props.repareRequest}
           />
           <TextField
@@ -32,8 +33,8 @@ function ModalEdit(props) {
             variant="outlined"
             type="text"
             label={t("Arabic Name")}
-            name="nameAr"
-            value={props.editItem?.nameAr}
+            name="name_ar"
+            value={props.newCountry?.name_ar}
             onChange={props.repareRequest}
           />
         </form>
@@ -49,8 +50,7 @@ function ModalEdit(props) {
         <Button
           className="btn btn-primary"
           variant="primary"
-          onClick={props.handleSubmitEdit}
-          //   onClick={() => handleSubmitEdit(editItem.id)}
+          onClick={props.handleSubmitCreate}
         >
           {t("Save")}
         </Button>
@@ -59,4 +59,4 @@ function ModalEdit(props) {
   );
 }
 
-export default ModalEdit;
+export default ModalAdd;

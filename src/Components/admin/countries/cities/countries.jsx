@@ -15,16 +15,16 @@ import {
 } from "@mui/material";
 
 import "toastify-js/src/toastify.css";
-import "../../../assets/general-design.css";
+import "../../../../assets/general-design.css";
 
 import { useTranslation } from "react-i18next";
 import { use } from "i18next";
 
 import Toastify from "toastify-js";
-import Loading from "../../../common/loading/loading";
-import WrongMessage from "../../../common/wrongMessage/wrongMessage";
-import NoData from "../../../common/noData/noData";
-import { base_url, config } from "../../../service/service";
+import Loading from "../../../../common/loading/loading";
+import WrongMessage from "../../../../common/wrongMessage/wrongMessage";
+import NoData from "../../../../common/noData/noData";
+import { base_url, config } from "../../../../service/service";
 
 import ModalAdd from "./modals/add";
 import ModalEdit from "./modals/edit";
