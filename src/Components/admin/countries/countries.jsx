@@ -29,6 +29,7 @@ import { base_url, config } from "../../../service/service";
 import ModalAdd from "./modals/add";
 import ModalEdit from "./modals/edit";
 
+/* main function */
 function Countries(props) {
   const { t } = useTranslation();
 
@@ -216,9 +217,7 @@ function Countries(props) {
     `
       );
       setCountries(res.data.data);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   // add
@@ -243,7 +242,6 @@ function Countries(props) {
         setAddModal(false);
       })
       .catch((err) => {
-        console.log("err", err.response.data.message);
         Toastify({
           text: `${err.response.data.message}`,
           style: {
@@ -256,9 +254,7 @@ function Countries(props) {
 
   // edit
   const handleEdit = async (id) => {
-    console.log("edit", id);
     const res = await axios.get(`${base_url}/admin/country/${id}`);
-    console.log("edit", res.data.data);
     setEditItem(res.data.data);
     setEditModal(true);
   };
@@ -294,7 +290,6 @@ function Countries(props) {
             color: "white",
           },
         }).showToast();
-        console.log(err);
       });
   };
 
@@ -309,16 +304,13 @@ function Countries(props) {
     const url = country.active
       ? `${base_url}/admin/country-inactive/${country.id}`
       : `${base_url}/admin/country-active/${country.id}`;
-    await axios.patch(url, {}, config);
-    setCountries(
-      countries.filter((row) => {
-        return row.id !== country.id;
-      })
-    );
+
+    await axios.patch(url, {}, config).then(function (res) {
+      handleSearchReq(country, { activeStatus: searchRequestControls.active });
+    });
   };
 
   /* HTML SECTION */
-
   return (
     <>
       {/* loading spinner*/}
@@ -447,6 +439,7 @@ function Countries(props) {
       {!loading && wrongMessage && <WrongMessage />}
     </>
   );
+  /* END SECTION */
 }
 
 export default Countries;
