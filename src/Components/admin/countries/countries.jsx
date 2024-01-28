@@ -38,11 +38,11 @@ function Countries(props) {
     name_ar: "",
   };
 
+  const [countries, setCountries] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [wrongMessage, setWrongMessage] = useState(false);
   const [totalcountrysLength, setTotalcountrysLength] = useState("");
-
-  const [countries, setCountries] = useState([]);
 
   //modals
   const [addModal, setAddModal] = useState(false);
@@ -72,6 +72,167 @@ function Countries(props) {
     },
   ]);
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const url = `${base_url}/admin/countries`;
+    await axios
+      .get(url)
+      .then((res) => {
+        setLoading(false);
+        setCountries(res.data.data);
+        setTotalcountrysLength(res.data.meta?.total);
+      })
+
+      .catch((err) => {
+        // loading
+        setTimeout(function () {
+          setLoading(false);
+        }, 3000);
+
+        setWrongMessage(true);
+      });
+  };
+
+  const repareRequest = (e) => {
+    const newData = {
+      ...newValue,
+      [e.target.name]: e.target.value,
+    };
+    setNewValue(newData);
+
+    const newItem = {
+      ...editItem,
+      [e.target.name]: e.target.value,
+    };
+    setEditItem(newItem);
+  };
+
+  const onPageChange = (e) => {
+    setRowsPerPage(e.rows);
+    setPageNumber(e.page + 1);
+
+    handleSearchReq(e, {
+      perPage: e.rows,
+      pageNumber: e.page + 1,
+    });
+  };
+
+  const handleSearchReq = async (
+    e,
+    { queryString, activeStatus, filterType, perPage, pageNumber }
+  ) => {
+    try {
+      setSearchRequestControls({
+        queryString: queryString,
+        active: activeStatus,
+        filterType: filterType,
+        pageNumber: pageNumber,
+        perPage: perPage,
+      });
+
+      const res = await axios.get(
+        `${base_url}/admin/countries/search?
+          per_page=${Number(perPage) || ""}
+          &query_string=${queryString || ""}
+          &user_account_type_id=${filterType || ""}
+          &page=${pageNumber || ""}
+          &active=${activeStatus || ""}
+    `
+      );
+      setCountries(res.data.data);
+    } catch (err) {}
+  };
+
+  const openCreateModal = () => {
+    setAddModal(true);
+    setNewValue(emptyValue);
+  };
+
+  const handleSubmitCreate = async () => {
+    await axios
+      .post(`${base_url}/admin/country`, newValue)
+      .then((res) => {
+        Toastify({
+          text: `country created successfully`,
+          style: {
+            background: "green",
+            color: "white",
+          },
+        }).showToast();
+        countries.unshift(res.data.data);
+        setNewValue(emptyValue);
+        setAddModal(false);
+      })
+      .catch((err) => {
+        Toastify({
+          text: `${err.response.data.message}`,
+          style: {
+            background: "red",
+            color: "white",
+          },
+        }).showToast();
+      });
+  };
+
+  const openEditModal = async (row) => {
+    setEditItem(row);
+    setEditModal(true);
+  };
+
+  const handleSubmitEdit = async (id) => {
+    const data = {
+      name: editItem.name,
+      name_ar: editItem.name_ar,
+    };
+    await axios
+      .patch(`${base_url}/admin/country/${id}`, data)
+      .then((res) => {
+        Toastify({
+          text: `country updated successfully`,
+          style: {
+            background: "green",
+            color: "white",
+          },
+        }).showToast();
+        for (let i = 0; i < countries.length; i++) {
+          if (countries[i].id === id) {
+            countries[i] = res.data.data;
+          }
+        }
+        setEditItem({});
+        setEditModal(false);
+      })
+      .catch((err) => {
+        Toastify({
+          text: `${err.response.data.message}`,
+          style: {
+            background: "red",
+            color: "white",
+          },
+        }).showToast();
+      });
+  };
+
+  const closeModal = () => {
+    setNewValue(emptyValue);
+    setAddModal(false);
+    setEditModal(false);
+  };
+
+  const ChangeActiveStatus = async (country) => {
+    const url = country.active
+      ? `${base_url}/admin/country-inactive/${country.id}`
+      : `${base_url}/admin/country-active/${country.id}`;
+
+    await axios.patch(url, {}, config).then(function (res) {
+      handleSearchReq(country, { activeStatus: searchRequestControls.active });
+    });
+  };
+
+  /* columns */
   const columns = [
     {
       field: "index",
@@ -131,7 +292,7 @@ function Countries(props) {
       renderCell: ({ row }) => {
         return (
           <Box className="actionsBox">
-            <IconButton color="success" onClick={() => handleEdit(row.id)}>
+            <IconButton color="success" onClick={() => openEditModal(row)}>
               <BorderColorOutlinedIcon
                 sx={{
                   color: "green",
@@ -144,171 +305,7 @@ function Countries(props) {
       },
     },
   ];
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const getData = async () => {
-    const url = `${base_url}/admin/countries`;
-    await axios
-      .get(url)
-      .then((res) => {
-        setLoading(false);
-        setCountries(res.data.data);
-        setTotalcountrysLength(res.data.meta?.total);
-      })
-
-      .catch((err) => {
-        // loading
-        setTimeout(function () {
-          setLoading(false);
-        }, 3000);
-
-        setWrongMessage(true);
-      });
-  };
-
-  // change any input
-  const handleChange = (e) => {
-    const newData = {
-      ...newValue,
-      [e.target.name]: e.target.value,
-    };
-    setNewValue(newData);
-
-    const newItem = {
-      ...editItem,
-      [e.target.name]: e.target.value,
-    };
-    setEditItem(newItem);
-  };
-
-  const onPageChange = (e) => {
-    setRowsPerPage(e.rows);
-    setPageNumber(e.page + 1);
-
-    handleSearchReq(e, {
-      perPage: e.rows,
-      pageNumber: e.page + 1,
-    });
-  };
-
-  const handleSearchReq = async (
-    e,
-    { queryString, activeStatus, filterType, perPage, pageNumber }
-  ) => {
-    try {
-      setSearchRequestControls({
-        queryString: queryString,
-        active: activeStatus,
-        filterType: filterType,
-        pageNumber: pageNumber,
-        perPage: perPage,
-      });
-
-      const res = await axios.get(
-        `${base_url}/admin/countries/search?
-          per_page=${Number(perPage) || ""}
-          &query_string=${queryString || ""}
-          &user_account_type_id=${filterType || ""}
-          &page=${pageNumber || ""}
-          &active=${activeStatus || ""}
-    `
-      );
-      setCountries(res.data.data);
-    } catch (err) {}
-  };
-
-  // add
-  const handleAdd = () => {
-    setAddModal(true);
-    setNewValue(emptyValue);
-  };
-
-  const handleSubmitCreate = async () => {
-    await axios
-      .post(`${base_url}/admin/country`, newValue)
-      .then((res) => {
-        Toastify({
-          text: `country created successfully`,
-          style: {
-            background: "green",
-            color: "white",
-          },
-        }).showToast();
-        countries.unshift(res.data.data);
-        setNewValue(emptyValue);
-        setAddModal(false);
-      })
-      .catch((err) => {
-        Toastify({
-          text: `${err.response.data.message}`,
-          style: {
-            background: "red",
-            color: "white",
-          },
-        }).showToast();
-      });
-  };
-
-  // edit
-  const handleEdit = async (id) => {
-    const res = await axios.get(`${base_url}/admin/country/${id}`);
-    setEditItem(res.data.data);
-    setEditModal(true);
-  };
-
-  const handleSubmitEdit = async (id) => {
-    const data = {
-      name: editItem.name,
-      name_ar: editItem.name_ar,
-    };
-    await axios
-      .patch(`${base_url}/admin/country/${id}`, data)
-      .then((res) => {
-        Toastify({
-          text: `country updated successfully`,
-          style: {
-            background: "green",
-            color: "white",
-          },
-        }).showToast();
-        for (let i = 0; i < countries.length; i++) {
-          if (countries[i].id === id) {
-            countries[i] = res.data.data;
-          }
-        }
-        setEditItem({});
-        setEditModal(false);
-      })
-      .catch((err) => {
-        Toastify({
-          text: `${err.response.data.message}`,
-          style: {
-            background: "red",
-            color: "white",
-          },
-        }).showToast();
-      });
-  };
-
-  // close any modal
-  const handleClose = () => {
-    setNewValue(emptyValue);
-    setAddModal(false);
-    setEditModal(false);
-  };
-
-  const ChangeActiveStatus = async (country) => {
-    const url = country.active
-      ? `${base_url}/admin/country-inactive/${country.id}`
-      : `${base_url}/admin/country-active/${country.id}`;
-
-    await axios.patch(url, {}, config).then(function (res) {
-      handleSearchReq(country, { activeStatus: searchRequestControls.active });
-    });
-  };
+  /* end-columns */
 
   /* HTML SECTION */
   return (
@@ -325,7 +322,7 @@ function Countries(props) {
               className="btn add"
               variant="contained"
               size="small"
-              onClick={handleAdd}
+              onClick={openCreateModal}
               startIcon={<AddLocationAltOutlinedIcon />}
             >
               {t("AddNewValue")}
@@ -419,17 +416,17 @@ function Countries(props) {
           {/* modals */}
           <ModalAdd
             show={addModal}
-            handleClose={handleClose}
+            closeModal={closeModal}
             title={t("AddNewValue")}
             newValue={newValue}
-            handleChange={handleChange}
+            repareRequest={repareRequest}
             handleSubmitCreate={handleSubmitCreate}
           />
           <ModalEdit
             show={editModal}
-            handleClose={handleClose}
+            closeModal={closeModal}
             editItem={editItem}
-            handleChange={handleChange}
+            repareRequest={repareRequest}
             handleSubmitEdit={() => handleSubmitEdit(editItem.id)}
           />
           {/* end-modals */}

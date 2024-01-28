@@ -10,7 +10,7 @@ function ModalAdd(props) {
 
  
   return (
-    <Modal show={props.show} onHide={props.handleClose} className="Modal">
+    <Modal show={props.show} onHide={props.closeModal} className="Modal">
       <Modal.Header closeButton>
         <Modal.Title>{t("AddNewCountry")}</Modal.Title>
       </Modal.Header>
@@ -25,7 +25,7 @@ function ModalAdd(props) {
             label={t("Name")}
             name="name"
             value={props.newCountry?.name}
-            onChange={props.handleChange}
+            onChange={props.repareRequest}
           />
           <TextField
             className="input"
@@ -35,7 +35,7 @@ function ModalAdd(props) {
             label={t("Arabic Name")}
             name="name_ar"
             value={props.newCountry?.name_ar}
-            onChange={props.handleChange}
+            onChange={props.repareRequest}
           />
         </form>
       </Modal.Body>
@@ -43,7 +43,7 @@ function ModalAdd(props) {
         <Button
           className="close btn btn-danger"
           variant="secondary"
-          onClick={props.handleClose}
+          onClick={props.closeModal}
         >
           {t("Close")}
         </Button>

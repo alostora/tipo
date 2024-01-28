@@ -9,7 +9,7 @@ function ModalEdit(props) {
   const { t } = useTranslation();
 
   return (
-    <Modal show={props.show} onHide={props.handleClose} className="Modal">
+    <Modal show={props.show} onHide={props.closeModal} className="Modal">
       <Modal.Header closeButton>
         <Modal.Title>{t("EditCountry")} </Modal.Title>
       </Modal.Header>
@@ -24,7 +24,7 @@ function ModalEdit(props) {
             label={t("Name")}
             name="name"
             value={props.editItem?.name}
-            onChange={props.handleChange}
+            onChange={props.repareRequest}
           />
           <TextField
             className="input"
@@ -34,7 +34,7 @@ function ModalEdit(props) {
             label={t("Arabic Name")}
             name="nameAr"
             value={props.editItem?.nameAr}
-            onChange={props.handleChange}
+            onChange={props.repareRequest}
           />
         </form>
       </Modal.Body>
@@ -42,7 +42,7 @@ function ModalEdit(props) {
         <Button
           className="close btn btn-danger"
           variant="secondary"
-          onClick={props.handleClose}
+          onClick={props.closeModal}
         >
           {t("Close")}
         </Button>
