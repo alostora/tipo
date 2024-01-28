@@ -1,0 +1,72 @@
+.loginPage {
+    font-family: Arial, Helvetica, sans-serif;
+    /* background-image: url(../../../public/assets/erp.jpg); */
+    background-size: cover;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+}
+
+.loginPage .box {
+    width: fit-content;
+    margin: auto !important;
+    margin-top: 13% !important;
+    background-color: rgba(255, 255, 255, 0.904);
+    padding: 50px;
+    border-radius: 40px;
+}
+
+.loginPage .box form .input {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.loginPage .box .buttons {
+    display: flex;
+    justify-content: flex-end !important;
+    position: relative;
+}
+
+.loginPage .box .buttons .forgetPassword {
+    text-decoration: none !important;
+    color: rgb(126, 121, 121);
+    border: transparent;
+    background-color: transparent;
+    font-size: 13px;
+    position: absolute;
+    top: -10px;
+    right: 1px;
+    cursor: pointer;
+}
+
+.loginPage .box .buttons .forgetPassword:hover {
+    color: blue;
+}
+
+#modal {
+    margin: auto;
+    width: 50%;
+    height: fit-content;
+    z-index: 99999 !important;
+   border-radius: 30%;
+}
+
+
+.loginPage .box #submit {
+    position: relative;
+    top: 20px;
+}
+
+/* responsive */
+@media (min-width:100px) and (max-width:1200px) {
+    .loginPage {
+
+        /* background-image: url(../../../public/assets/erp.jpg); */
+    }
+
+    .loginPage .box {
+        margin-top: 200px !important;
+    }
+
+}

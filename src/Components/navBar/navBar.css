@@ -1,0 +1,32 @@
+.navBar {
+  position: relative;
+  background-color: #fff;
+}
+.navBar .css-hip9hq-MuiPaper-root-MuiAppBar-root {
+  color: grey;
+  background-color: white !important;
+}
+
+.navBar .rightPart {
+  position: absolute;
+  right: 20px;
+    width: 25%;
+  }
+.navBar .rightPart a {
+  color: grey;
+  text-decoration: none;
+}
+.navBar .rightPart span {
+  margin-right: 20px;
+  color: grey;
+}
+.navBar .rightPart .avatar {
+  height: 30px;
+  width: 40px;
+  border-radius: 50%;
+  margin-right: 30px;
+}
+.navBar .rightPart .language {
+  text-transform: uppercase !important;
+
+}
