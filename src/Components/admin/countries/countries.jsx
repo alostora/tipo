@@ -4,14 +4,7 @@ import { Paginator } from "primereact/paginator";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-
 import AddLocationAltOutlinedIcon from "@mui/icons-material/AddLocationAltOutlined";
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
-
-import { useTranslation } from "react-i18next";
-import { use } from "i18next";
-
 import {
   Box,
   Button,
@@ -21,19 +14,24 @@ import {
   TextField,
 } from "@mui/material";
 
-import "./countries.css";
+import "toastify-js/src/toastify.css";
+import "../../../assets/general-design.css";
+
+import { useTranslation } from "react-i18next";
+import { use } from "i18next";
+
+import Toastify from "toastify-js";
 import Loading from "../../../common/loading/loading";
 import WrongMessage from "../../../common/wrongMessage/wrongMessage";
 import NoData from "../../../common/noData/noData";
 import { base_url, config } from "../../../service/service";
+
 import ModalAdd from "./modals/add";
 import ModalEdit from "./modals/edit";
 
 function Countries(props) {
-
-
   const { t } = useTranslation();
-  
+
   const emptyValue = {
     name: "",
     name_ar: "",
@@ -327,7 +325,7 @@ function Countries(props) {
       {loading && <Loading></Loading>}
       {/* countries */}
       {!loading && !wrongMessage && (
-        <div className="countries">
+        <div className="general-design">
           {/* header & add button */}
           <Box className="headerBox">
             <h3 className="header">{t("Countries")}</h3>
@@ -393,7 +391,7 @@ function Countries(props) {
           {countries.length !== 0 ? (
             <DataGrid
               sx={{ mt: 3 }}
-              rows={countries.map((item,index) => {
+              rows={countries.map((item, index) => {
                 return {
                   index: index + 1,
                   id: item.id,

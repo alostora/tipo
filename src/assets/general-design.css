@@ -1,15 +1,15 @@
-.countries .headerBox {
+.general-design .headerBox {
     text-align: center;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.countries .header {
+.general-design .header {
     color: var(--babyBlue-color);
 }
 
-.countries .add {
+.general-design .add {
     text-align: center;
     display: flex;
     background-color: rgb(55, 181, 141);
@@ -18,7 +18,7 @@
     text-decoration: none;
 }
 
-.countries .filters {
+.general-design .filters {
     display: flex;
     flex-direction: row;
     text-align: center;
@@ -27,7 +27,7 @@
     margin-top: 3;
 }
 
-.countries .stack {
+.general-design .stack {
     display: flex;
     flex-direction: row;
     gap: 1;
@@ -36,13 +36,13 @@
     text-align: center;
 }
 
-.countries #selectedActive {
+.general-design #selectedActive {
     min-width: 60%;
     min-height: 40px;
     margin: 20px 0px;
 }
 
-.countries .searchStack {
+.general-design .searchStack {
     display: flex;
     flex-direction: row;
     gap: 1;
@@ -51,7 +51,7 @@
     text-align: center;
 }
 
-.countries .actionsBox {
+.general-design .actionsBox {
     display: flex;
     flex-grow: 1;
     border-radius: 3px;
@@ -60,7 +60,7 @@
     justify-content: space-around;
 }
 
-.countries .activeBox {
+.general-design .activeBox {
     padding: 5px;
     max-width: 99px;
     border-radius: 3px;
@@ -69,7 +69,7 @@
     justify-content: space-evenly;
 }
 
-.countries .paginationStack {
+.general-design .paginationStack {
     display: flex;
     flex-direction: row;
     text-align: center;

@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Login from "../../Components/login/login";
+import Login from "../../components/login/login";
 import App from "../../App";
-import NotFound from "../../Components/notFound/notFound";
-import Countries from "../../Components/admin/countries/countries";
-import Dashboard from "../../Components/admin/dashboard/dashboard";
+import NotFound from "../../components/notFound/notFound";
+import Countries from "../../components/admin/countries/countries";
+import Dashboard from "../../components/admin/dashboard/dashboard";
 
 const AllRoutes = () => {
   return (

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 
-import NavBar from "./Components/navBar/navBar";
-import SideBar from "./Components/sideBar/sideBar";
+import NavBar from "./components/navBar/navBar";
+import SideBar from "./components/sideBar/sideBar";
 
 import "./common/language/language.css";
 import i18n from "./common/language/i18n";
