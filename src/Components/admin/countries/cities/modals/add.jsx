@@ -12,7 +12,7 @@ function ModalAdd(props) {
   return (
     <Modal show={props.show} onHide={props.closeModal} className="Modal">
       <Modal.Header closeButton>
-        <Modal.Title>{t("AddNewCountry")}</Modal.Title>
+        <Modal.Title>{t("AddNewCity")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form action="post">
@@ -24,7 +24,7 @@ function ModalAdd(props) {
             type="text"
             label={t("Name")}
             name="name"
-            value={props.newCountry?.name}
+            value={props.newCity?.name}
             onChange={props.repareRequest}
           />
           <TextField
@@ -34,7 +34,7 @@ function ModalAdd(props) {
             type="text"
             label={t("Arabic Name")}
             name="name_ar"
-            value={props.newCountry?.name_ar}
+            value={props.newCity?.name_ar}
             onChange={props.repareRequest}
           />
         </form>

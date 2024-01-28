@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import axios from "axios";
 import { Paginator } from "primereact/paginator";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -12,6 +14,7 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 
 import "toastify-js/src/toastify.css";
@@ -42,7 +45,7 @@ function Countries(props) {
 
   const [loading, setLoading] = useState(true);
   const [wrongMessage, setWrongMessage] = useState(false);
-  const [totalcountrysLength, setTotalcountrysLength] = useState("");
+  const [totalCountriesLength, setTotalCountriesLength] = useState("");
 
   //modals
   const [addModal, setAddModal] = useState(false);
@@ -83,7 +86,7 @@ function Countries(props) {
       .then((res) => {
         setLoading(false);
         setCountries(res.data.data);
-        setTotalcountrysLength(res.data.meta?.total);
+        setTotalCountriesLength(res.data.meta?.total);
       })
 
       .catch((err) => {
@@ -256,6 +259,38 @@ function Countries(props) {
       flex: 1,
     },
     {
+      field: "cities",
+      headerName: t("Cities"),
+      flex: 1,
+      flexGrow: 1,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row }) => {
+        return (
+          <Box className="activeBox">
+            <Typography sx={{}}>
+              <IconButton id="activButton" color="success" onClick={() => {}}>
+                <CheckBoxOutlinedIcon
+                  sx={{
+                    color: "blue",
+                  }}
+                  fontSize="small"
+                />
+              </IconButton>
+              <Link
+                style={{
+                  textDecoration: "none",
+                }}
+                to={"/cities?country_id=" + row.id}
+              >
+                {t("Cities")}
+              </Link>
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
       field: "activation",
       headerName: t("Activation"),
       flex: 1,
@@ -265,20 +300,26 @@ function Countries(props) {
       renderCell: ({ row }) => {
         return (
           <Box className="activeBox">
-            <IconButton
-              id="activButton"
-              color="success"
-              onClick={() => {
-                ChangeActiveStatus(row);
-              }}
-            >
-              <CheckBoxOutlinedIcon
-                sx={{
-                  color: row.active ? "green" : "red",
+            <Typography sx={{}}>
+              <IconButton
+                id="activButton"
+                color="success"
+                onClick={() => {
+                  ChangeActiveStatus(row);
                 }}
-                fontSize="small"
-              />
-            </IconButton>
+              >
+                <CheckBoxOutlinedIcon
+                  sx={{
+                    color: row.active ? "green" : "red",
+                  }}
+                  fontSize="small"
+                />
+              </IconButton>
+
+              {row.active ? t("Active") : t("Inactive")}
+
+              {}
+            </Typography>
           </Box>
         );
       },
@@ -387,6 +428,7 @@ function Countries(props) {
                   name: item.name,
                   nameAr: item.name_ar,
                   active: item.active,
+                  stopped_at: item.stopped_at,
                 };
               })}
               rowHeight={40}
@@ -407,7 +449,7 @@ function Countries(props) {
                 rowsPerPageOptions={[5, 10, 20, 30]}
                 first={pageNumber}
                 rows={rowsPerPage}
-                totalRecords={totalcountrysLength}
+                totalRecords={totalCountriesLength}
                 onPageChange={onPageChange}
               />
             </div>

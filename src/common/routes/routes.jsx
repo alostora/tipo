@@ -3,6 +3,7 @@ import Login from "../../components/login/login";
 import App from "../../App";
 import NotFound from "../../components/notFound/notFound";
 import Countries from "../../components/admin/countries/countries/countries";
+import Cities from "../../components/admin/countries/cities/cities";
 import Dashboard from "../../components/admin/dashboard/dashboard";
 
 const AllRoutes = () => {
@@ -17,7 +18,10 @@ const AllRoutes = () => {
         >
           <Route path="admin-dashboard" element={<Dashboard />} />
           <Route path={"countries"} element={<Countries />} />
+          <Route path={"cities/:country_id"} element={<Cities />} />
+          <Route path={"cities"} element={<Cities />} />
           <Route path={"*"} element={<NotFound />} />
+
           {/* /////////////////////////// */}
           {/* client */}
           <Route path="client-dashboard">

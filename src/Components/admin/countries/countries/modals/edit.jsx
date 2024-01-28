@@ -32,7 +32,7 @@ function ModalEdit(props) {
             variant="outlined"
             type="text"
             label={t("Arabic Name")}
-            name="nameAr"
+            name="name_ar"
             value={props.editItem?.nameAr}
             onChange={props.repareRequest}
           />

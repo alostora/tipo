@@ -11,7 +11,7 @@ function ModalEdit(props) {
   return (
     <Modal show={props.show} onHide={props.closeModal} className="Modal">
       <Modal.Header closeButton>
-        <Modal.Title>{t("EditCountry")} </Modal.Title>
+        <Modal.Title>{t("EditCity")} </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form action="post">
@@ -32,7 +32,7 @@ function ModalEdit(props) {
             variant="outlined"
             type="text"
             label={t("Arabic Name")}
-            name="nameAr"
+            name="name_ar"
             value={props.editItem?.nameAr}
             onChange={props.repareRequest}
           />

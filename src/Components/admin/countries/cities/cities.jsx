@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router";
+
 import axios from "axios";
 import { Paginator } from "primereact/paginator";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -12,6 +14,7 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 
 import "toastify-js/src/toastify.css";
@@ -30,19 +33,25 @@ import ModalAdd from "./modals/add";
 import ModalEdit from "./modals/edit";
 
 /* main function */
-function Countries(props) {
+function Cities(props) {
+  const params = useParams();
+
+  console.log(params.country_id);
+
   const { t } = useTranslation();
 
   const emptyValue = {
+    country_id: params.country_id,
     name: "",
     name_ar: "",
   };
 
+  const [cities, setCities] = useState([]);
   const [countries, setCountries] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [wrongMessage, setWrongMessage] = useState(false);
-  const [totalcountrysLength, setTotalcountrysLength] = useState("");
+  const [totalCitiesLength, settotalCitiesLength] = useState("");
 
   //modals
   const [addModal, setAddModal] = useState(false);
@@ -54,8 +63,9 @@ function Countries(props) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [pageNumber, setPageNumber] = useState(0);
   const [searchRequestControls, setSearchRequestControls] = useState({
+    countryId: params.country_id,
     queryString: "",
-    active: "",
+    activeStatus: "",
     filterType: "",
     pageNumber: "",
     perPage: "",
@@ -74,16 +84,38 @@ function Countries(props) {
 
   useEffect(() => {
     getData();
+    getcountries();
   }, []);
 
   const getData = async () => {
-    const url = `${base_url}/admin/countries`;
+    const url = `${base_url}/admin/governorates-search-all?country_id=${
+      params.country_id ? params.country_id : ""
+    }`;
+    await axios
+      .get(url)
+      .then((res) => {
+        setLoading(false);
+        setCities(res.data.data);
+        settotalCitiesLength(res.data.meta?.total);
+      })
+
+      .catch((err) => {
+        // loading
+        setTimeout(function () {
+          setLoading(false);
+        }, 3000);
+
+        setWrongMessage(true);
+      });
+  };
+
+  const getcountries = async () => {
+    const url = `${base_url}/country/countries`;
     await axios
       .get(url)
       .then((res) => {
         setLoading(false);
         setCountries(res.data.data);
-        setTotalcountrysLength(res.data.meta?.total);
       })
 
       .catch((err) => {
@@ -122,27 +154,28 @@ function Countries(props) {
 
   const handleSearchReq = async (
     e,
-    { queryString, activeStatus, filterType, perPage, pageNumber }
+    { countryId, queryString, activeStatus, filterType, perPage, pageNumber }
   ) => {
     try {
       setSearchRequestControls({
+        countryId: countryId,
         queryString: queryString,
-        active: activeStatus,
+        activeStatus: activeStatus,
         filterType: filterType,
         pageNumber: pageNumber,
         perPage: perPage,
       });
 
       const res = await axios.get(
-        `${base_url}/admin/countries/search?
+        `${base_url}/admin/governorates-search-all?
+        &country_id=${countryId || ""}
+        &query_string=${queryString || ""}
           per_page=${Number(perPage) || ""}
-          &query_string=${queryString || ""}
-          &user_account_type_id=${filterType || ""}
           &page=${pageNumber || ""}
           &active=${activeStatus || ""}
     `
       );
-      setCountries(res.data.data);
+      setCities(res.data.data);
     } catch (err) {}
   };
 
@@ -153,16 +186,16 @@ function Countries(props) {
 
   const handleSubmitCreate = async () => {
     await axios
-      .post(`${base_url}/admin/country`, newValue)
+      .post(`${base_url}/admin/governorate`, newValue)
       .then((res) => {
         Toastify({
-          text: `country created successfully`,
+          text: `${t("CreatedSuccessfully")}`,
           style: {
             background: "green",
             color: "white",
           },
         }).showToast();
-        countries.unshift(res.data.data);
+        cities.unshift(res.data.data);
         setNewValue(emptyValue);
         setAddModal(false);
       })
@@ -178,6 +211,7 @@ function Countries(props) {
   };
 
   const openEditModal = async (row) => {
+
     setEditItem(row);
     setEditModal(true);
   };
@@ -188,18 +222,18 @@ function Countries(props) {
       name_ar: editItem.name_ar,
     };
     await axios
-      .patch(`${base_url}/admin/country/${id}`, data)
+      .patch(`${base_url}/admin/governorate/${id}`, data)
       .then((res) => {
         Toastify({
-          text: `country updated successfully`,
+          text: `${t("UpdatedSuccessfully")}`,
           style: {
             background: "green",
             color: "white",
           },
         }).showToast();
-        for (let i = 0; i < countries.length; i++) {
-          if (countries[i].id === id) {
-            countries[i] = res.data.data;
+        for (let i = 0; i < cities.length; i++) {
+          if (cities[i].id === id) {
+            cities[i] = res.data.data;
           }
         }
         setEditItem({});
@@ -222,13 +256,15 @@ function Countries(props) {
     setEditModal(false);
   };
 
-  const ChangeActiveStatus = async (country) => {
-    const url = country.active
-      ? `${base_url}/admin/country-inactive/${country.id}`
-      : `${base_url}/admin/country-active/${country.id}`;
+  const ChangeActiveStatus = async (city) => {
+    const url = city.active
+      ? `${base_url}/admin/governorate-inactive/${city.id}`
+      : `${base_url}/admin/governorate-active/${city.id}`;
 
     await axios.patch(url, {}, config).then(function (res) {
-      handleSearchReq(country, { activeStatus: searchRequestControls.active });
+      handleSearchReq(city, {
+        activeStatus: searchRequestControls.activeStatus,
+      });
     });
   };
 
@@ -265,20 +301,26 @@ function Countries(props) {
       renderCell: ({ row }) => {
         return (
           <Box className="activeBox">
-            <IconButton
-              id="activButton"
-              color="success"
-              onClick={() => {
-                ChangeActiveStatus(row);
-              }}
-            >
-              <CheckBoxOutlinedIcon
-                sx={{
-                  color: row.active ? "green" : "red",
+            <Typography sx={{}}>
+              <IconButton
+                id="activButton"
+                color="success"
+                onClick={() => {
+                  ChangeActiveStatus(row);
                 }}
-                fontSize="small"
-              />
-            </IconButton>
+              >
+                <CheckBoxOutlinedIcon
+                  sx={{
+                    color: row.active ? "green" : "red",
+                  }}
+                  fontSize="small"
+                />
+              </IconButton>
+
+              {row.active ? t("Active") : t("Inactive")}
+
+              {}
+            </Typography>
           </Box>
         );
       },
@@ -312,12 +354,12 @@ function Countries(props) {
     <>
       {/* loading spinner*/}
       {loading && <Loading></Loading>}
-      {/* countries */}
+      {/* cities */}
       {!loading && !wrongMessage && (
         <div className="general-design">
           {/* header & add button */}
           <Box className="headerBox">
-            <h3 className="header">{t("Countries")}</h3>
+            <h3 className="header">{t("Cities")}</h3>
             <Button
               className="btn add"
               variant="contained"
@@ -329,13 +371,14 @@ function Countries(props) {
             </Button>
           </Box>
           {/* end-header & add button */}
+
           {/* filters */}
           <Box className="filters">
             {/* active filter */}
-            <Stack className="stack">
+            <Stack className="stack" sx={{ width: "10%" }}>
               <TextField
-                id={"selectedActive"}
                 select
+                fullWidth
                 label={t("Active ")}
                 defaultValue="all"
                 variant="standard"
@@ -355,7 +398,34 @@ function Countries(props) {
               </TextField>
             </Stack>
             {/* end-active filter */}
-            {/* queryString */}
+
+            {/* country filter */}
+            <Stack className="stack" sx={{ width: "10%" }}>
+              <TextField
+                select
+                fullWidth
+                label={t("Countries ")}
+                defaultValue="all"
+                variant="standard"
+                size="larg"
+                onChange={(e) => {
+                  handleSearchReq(e, {
+                    countryId: e.target.value !== "all" ? e.target.value : null,
+                  });
+                }}
+              >
+                <MenuItem key="all" value="all">
+                  {t("All")}
+                </MenuItem>
+                {countries?.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Stack>
+            {/* end-country filter */}
+            {/* queryString filter*/}
             <Stack className="searchStack">
               <TextField
                 className="inputSearch"
@@ -377,16 +447,17 @@ function Countries(props) {
           </Box>
           {/* end-filters */}
           {/* table */}
-          {countries.length !== 0 ? (
+          {cities.length !== 0 ? (
             <DataGrid
               sx={{ mt: 3 }}
-              rows={countries.map((item, index) => {
+              rows={cities.map((item, index) => {
                 return {
                   index: index + 1,
                   id: item.id,
                   name: item.name,
                   nameAr: item.name_ar,
                   active: item.active,
+                  stopped_at: item.stopped_at,
                 };
               })}
               rowHeight={40}
@@ -397,7 +468,7 @@ function Countries(props) {
               hideFooter
             />
           ) : (
-            <NoData data="country" />
+            <NoData data="city" />
           )}
           {/* end-table */}
           {/* pagination */}
@@ -407,7 +478,7 @@ function Countries(props) {
                 rowsPerPageOptions={[5, 10, 20, 30]}
                 first={pageNumber}
                 rows={rowsPerPage}
-                totalRecords={totalcountrysLength}
+                totalRecords={totalCitiesLength}
                 onPageChange={onPageChange}
               />
             </div>
@@ -439,4 +510,4 @@ function Countries(props) {
   /* END SECTION */
 }
 
-export default Countries;
+export default Cities;
