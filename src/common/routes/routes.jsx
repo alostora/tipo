@@ -4,6 +4,7 @@ import App from "../../App";
 import NotFound from "../../components/notFound/notFound";
 import Countries from "../../components/admin/countries/countries/countries";
 import Cities from "../../components/admin/countries/cities/cities";
+import Users from "../../components/admin/users/users";
 import Dashboard from "../../components/admin/dashboard/dashboard";
 
 const AllRoutes = () => {
@@ -20,6 +21,10 @@ const AllRoutes = () => {
           <Route path={"countries"} element={<Countries />} />
           <Route path={"cities/:country_id"} element={<Cities />} />
           <Route path={"cities"} element={<Cities />} />
+          <Route path={"users"} element={<Users />} />
+
+
+
           <Route path={"*"} element={<NotFound />} />
 
           {/* /////////////////////////// */}

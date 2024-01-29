@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 import axios from "axios";
 import { Paginator } from "primereact/paginator";
@@ -18,40 +18,34 @@ import {
 } from "@mui/material";
 
 import "toastify-js/src/toastify.css";
-import "../../../../assets/general-design.css";
+import "../../../assets/general-design.css";
 
 import { useTranslation } from "react-i18next";
 import { use } from "i18next";
 
 import Toastify from "toastify-js";
-import Loading from "../../../../common/loading/loading";
-import WrongMessage from "../../../../common/wrongMessage/wrongMessage";
-import NoData from "../../../../common/noData/noData";
-import { base_url, config } from "../../../../service/service";
+import Loading from "../../../common/loading/loading";
+import WrongMessage from "../../../common/wrongMessage/wrongMessage";
+import NoData from "../../../common/noData/noData";
+import { base_url, config } from "../../../service/service";
 
 import ModalAdd from "./modals/add";
 import ModalEdit from "./modals/edit";
 
 /* main function */
-function Cities(props) {
-  const params = useParams();
-
-  console.log(params.country_id);
-
+function Users(props) {
   const { t } = useTranslation();
 
   const emptyValue = {
-    country_id: params.country_id,
     name: "",
     name_ar: "",
   };
 
-  const [cities, setCities] = useState([]);
-  const [countries, setCountries] = useState([]);
+  const [users, setUsers] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [wrongMessage, setWrongMessage] = useState(false);
-  const [totalCitiesLength, settotalCitiesLength] = useState("");
+  const [totalUsersLength, setTotalUsersLength] = useState("");
 
   //modals
   const [addModal, setAddModal] = useState(false);
@@ -63,7 +57,6 @@ function Cities(props) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [pageNumber, setPageNumber] = useState(0);
   const [searchRequestControls, setSearchRequestControls] = useState({
-    countryId: params.country_id,
     queryString: "",
     active: "",
     filterType: "",
@@ -84,38 +77,16 @@ function Cities(props) {
 
   useEffect(() => {
     getData();
-    getcountries();
   }, []);
 
   const getData = async () => {
-    const url = `${base_url}/admin/governorates-search-all?country_id=${
-      params.country_id ? params.country_id : ""
-    }`;
+    const url = `${base_url}/admin/users/search`;
     await axios
       .get(url)
       .then((res) => {
         setLoading(false);
-        setCities(res.data.data);
-        settotalCitiesLength(res.data.meta?.total);
-      })
-
-      .catch((err) => {
-        // loading
-        setTimeout(function () {
-          setLoading(false);
-        }, 3000);
-
-        setWrongMessage(true);
-      });
-  };
-
-  const getcountries = async () => {
-    const url = `${base_url}/country/countries`;
-    await axios
-      .get(url)
-      .then((res) => {
-        setLoading(false);
-        setCountries(res.data.data);
+        setUsers(res.data.data);
+        setTotalUsersLength(res.data.meta?.total);
       })
 
       .catch((err) => {
@@ -154,28 +125,27 @@ function Cities(props) {
 
   const handleSearchReq = async (
     e,
-    { countryId, queryString, activeStatus, filterType, perPage, pageNumber }
+    { queryString, activeStatus, filterType, perPage, pageNumber }
   ) => {
     try {
       setSearchRequestControls({
-        countryId: countryId,
         queryString: queryString,
-        activeStatus: activeStatus,
+        active: activeStatus,
         filterType: filterType,
         pageNumber: pageNumber,
         perPage: perPage,
       });
 
       const res = await axios.get(
-        `${base_url}/admin/governorates-search-all?
-        &country_id=${countryId || ""}
-        &query_string=${queryString || ""}
+        `${base_url}/admin/users/search?
           per_page=${Number(perPage) || ""}
+          &query_string=${queryString || ""}
+          &user_account_type_id=${filterType || ""}
           &page=${pageNumber || ""}
           &active=${activeStatus || ""}
     `
       );
-      setCities(res.data.data);
+      setUsers(res.data.data);
     } catch (err) {}
   };
 
@@ -186,16 +156,16 @@ function Cities(props) {
 
   const handleSubmitCreate = async () => {
     await axios
-      .post(`${base_url}/admin/governorate`, newValue)
+      .post(`${base_url}/admin/user`, newValue)
       .then((res) => {
         Toastify({
-          text: `${t("CreatedSuccessfully")}`,
+          text: `user created successfully`,
           style: {
             background: "green",
             color: "white",
           },
         }).showToast();
-        cities.unshift(res.data.data);
+        users.unshift(res.data.data);
         setNewValue(emptyValue);
         setAddModal(false);
       })
@@ -211,7 +181,6 @@ function Cities(props) {
   };
 
   const openEditModal = async (row) => {
-
     setEditItem(row);
     setEditModal(true);
   };
@@ -222,18 +191,18 @@ function Cities(props) {
       name_ar: editItem.name_ar,
     };
     await axios
-      .patch(`${base_url}/admin/governorate/${id}`, data)
+      .patch(`${base_url}/admin/user/${id}`, data)
       .then((res) => {
         Toastify({
-          text: `${t("UpdatedSuccessfully")}`,
+          text: `user updated successfully`,
           style: {
             background: "green",
             color: "white",
           },
         }).showToast();
-        for (let i = 0; i < cities.length; i++) {
-          if (cities[i].id === id) {
-            cities[i] = res.data.data;
+        for (let i = 0; i < users.length; i++) {
+          if (users[i].id === id) {
+            users[i] = res.data.data;
           }
         }
         setEditItem({});
@@ -256,15 +225,13 @@ function Cities(props) {
     setEditModal(false);
   };
 
-  const ChangeActiveStatus = async (city) => {
-    const url = city.active
-      ? `${base_url}/admin/governorate-inactive/${city.id}`
-      : `${base_url}/admin/governorate-active/${city.id}`;
+  const ChangeActiveStatus = async (user) => {
+    const url = user.active
+      ? `${base_url}/admin/user-inactive/${user.id}`
+      : `${base_url}/admin/user-active/${user.id}`;
 
     await axios.patch(url, {}, config).then(function (res) {
-      handleSearchReq(city, {
-        activeStatus: searchRequestControls.activeStatus,
-      });
+      handleSearchReq(user, { activeStatus: searchRequestControls.active });
     });
   };
 
@@ -285,14 +252,7 @@ function Cities(props) {
       flex: 1,
     },
     {
-      field: "nameAr",
-      headerName: t("NameAr"),
-      align: "center",
-      headerAlign: "center",
-      flex: 1,
-    },
-    {
-      field: "activation",
+      field: "active",
       headerName: t("Activation"),
       flex: 1,
       flexGrow: 1,
@@ -354,12 +314,12 @@ function Cities(props) {
     <>
       {/* loading spinner*/}
       {loading && <Loading></Loading>}
-      {/* cities */}
+      {/* users */}
       {!loading && !wrongMessage && (
         <div className="general-design">
           {/* header & add button */}
           <Box className="headerBox">
-            <h3 className="header">{t("Cities")}</h3>
+            <h3 className="header">{t("Users")}</h3>
             <Button
               className="btn add"
               variant="contained"
@@ -371,14 +331,13 @@ function Cities(props) {
             </Button>
           </Box>
           {/* end-header & add button */}
-
           {/* filters */}
           <Box className="filters">
             {/* active filter */}
-            <Stack className="stack" sx={{ width: "10%" }}>
+            <Stack className="stack">
               <TextField
+                id={"selectedActive"}
                 select
-                fullWidth
                 label={t("Active ")}
                 defaultValue="all"
                 variant="standard"
@@ -398,34 +357,7 @@ function Cities(props) {
               </TextField>
             </Stack>
             {/* end-active filter */}
-
-            {/* country filter */}
-            <Stack className="stack" sx={{ width: "10%" }}>
-              <TextField
-                select
-                fullWidth
-                label={t("Countries ")}
-                defaultValue="all"
-                variant="standard"
-                size="larg"
-                onChange={(e) => {
-                  handleSearchReq(e, {
-                    countryId: e.target.value !== "all" ? e.target.value : null,
-                  });
-                }}
-              >
-                <MenuItem key="all" value="all">
-                  {t("All")}
-                </MenuItem>
-                {countries?.map((item) => (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Stack>
-            {/* end-country filter */}
-            {/* queryString filter*/}
+            {/* queryString */}
             <Stack className="searchStack">
               <TextField
                 className="inputSearch"
@@ -447,15 +379,14 @@ function Cities(props) {
           </Box>
           {/* end-filters */}
           {/* table */}
-          {cities.length !== 0 ? (
+          {users.length !== 0 ? (
             <DataGrid
               sx={{ mt: 3 }}
-              rows={cities.map((item, index) => {
+              rows={users.map((item, index) => {
                 return {
                   index: index + 1,
                   id: item.id,
                   name: item.name,
-                  nameAr: item.name_ar,
                   active: item.active,
                   stopped_at: item.stopped_at,
                 };
@@ -468,7 +399,7 @@ function Cities(props) {
               hideFooter
             />
           ) : (
-            <NoData data="city" />
+            <NoData data="user" />
           )}
           {/* end-table */}
           {/* pagination */}
@@ -478,7 +409,7 @@ function Cities(props) {
                 rowsPerPageOptions={[5, 10, 20, 30]}
                 first={pageNumber}
                 rows={rowsPerPage}
-                totalRecords={totalCitiesLength}
+                totalRecords={totalUsersLength}
                 onPageChange={onPageChange}
               />
             </div>
@@ -510,4 +441,4 @@ function Cities(props) {
   /* END SECTION */
 }
 
-export default Cities;
+export default Users;

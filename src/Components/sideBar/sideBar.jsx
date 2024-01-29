@@ -30,6 +30,12 @@ export default function SideBar(props) {
       icon: <PublicIcon sx={{ fontSize: "20px" }} />,
       path: "/countries",
     },
+
+    {
+      text: t("Users"),
+      icon: <PublicIcon sx={{ fontSize: "20px" }} />,
+      path: "/users",
+    },
   ];
   const client_arr = [
     {
@@ -83,10 +89,7 @@ export default function SideBar(props) {
                   disablePadding
                   sx={{ display: "flex", color: "grey" }}
                 >
-                  <NavLink
-                    to={item.path}
-                  
-                  >
+                  <NavLink to={item.path}>
                     {/* icon */}
                     <ListItemIcon className="ListItemIcon">
                       {item.icon}
